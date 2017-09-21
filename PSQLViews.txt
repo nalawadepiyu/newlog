@@ -1,0 +1,13 @@
+CREATE VIEW author_details AS SELECT articles.title, articles.slug ,authors.name FROM authors , articles WHERE articles.author = authors.id ORDER BY authors.name;
+
+
+CREATE VIEW path_details AS SELECT path, COUNT(*) AS view FROM log GROUP BY path ORDER BY path;
+
+CREATE VIEW article_details AS SELECT author_details.name, author_details.title, path_details.view FROM author_details, path_details WHERE path_details.path = CONCAT('/article/', author_details.slug) ORDER BY author_details.name;
+
+
+create view total as select count(*) AS views, date(time) from log group by date(time) order by date(time);
+
+create view error as select count(*) as allerrors , date(time) from log where status = '404 NOT FOUND' group by date(time) order by date(time);
+
+create view rate_err_view as select total.date, (error.allerrors*100.0/total.views) as percentage from total, error where total.date = error.date order by total.date;
